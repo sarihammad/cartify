@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecommerce
+    url: jdbc:postgresql://postgres:5432/ecommerce
     username: user
     password: password
   jpa:
@@ -18,3 +18,7 @@ spring:
 
 server:
   port: 8080
+
+jwt:
+  secret: 5b7e06892ace6899d76949f2b9045c32d48d7a041c2be979d3057b6b0836e779
+  expirationMs: 3600000
