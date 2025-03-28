@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -11,7 +9,21 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - backend
+      - ecommerce-net
+  
+  ecommerce:
+    build: ../
+    container_name: ecommerce_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - ecommerce-net
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ecommerce
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
 
   redis:
     image: redis:alpine
@@ -19,7 +31,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - backend
+      - ecommerce-net
 
   zookeeper:
     image: wurstmeister/zookeeper
@@ -27,7 +39,7 @@ services:
     ports:
       - "2181:2181"
     networks:
-      - backend
+      - ecommerce-net
 
   kafka:
     image: wurstmeister/kafka
@@ -41,8 +53,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - backend
+      - ecommerce-net
 
 networks:
-  backend:
-    driver: bridge
+  ecommerce-net:
