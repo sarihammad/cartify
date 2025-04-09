@@ -1,65 +1,38 @@
 package com.example.cartify.payment.service;
 
-import com.example.cartify.auth.model.User;
-import com.example.cartify.auth.repository.UserRepository;
-import com.example.cartify.order.model.Order;
-import com.example.cartify.order.repository.OrderRepository;
-import com.example.cartify.payment.dto.PaymentRequest;
-import com.example.cartify.payment.dto.PaymentResponse;
-import com.example.cartify.payment.model.Payment;
-import com.example.cartify.payment.repository.PaymentRepository;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import com.stripe.param.PaymentIntentCreateParams;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final PaymentRepository paymentRepository;
-    private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
+    @Value("${stripe.secret-key}")
+    private String secretKey;
 
-    public PaymentResponse makePayment(String email, PaymentRequest request) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+    public String createPaymentIntent(Long amount, String currency) throws StripeException {
+        Stripe.apiKey = secretKey;
 
-        if (!order.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Unauthorized payment attempt.");
-        }
+        PaymentIntentCreateParams params =
+                PaymentIntentCreateParams.builder()
+                        .setAmount(amount) // amount in cents
+                        .setCurrency(currency)
+                        .setAutomaticPaymentMethods(
+                                PaymentIntentCreateParams.AutomaticPaymentMethods
+                                        .builder()
+                                        .setEnabled(true)
+                                        .build()
+                        )
+                        .build();
 
-        Payment payment = Payment.builder()
-                .user(user)
-                .order(order)
-                .amount(order.getTotal())
-                .paymentMethod(request.getPaymentMethod())
-                .paidAt(LocalDateTime.now())
-                .build();
-
-        paymentRepository.save(payment);
-
-        return toDto(payment);
-    }
-
-    public List<PaymentResponse> getUserPayments(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        return paymentRepository.findByUser(user).stream().map(this::toDto).toList();
-    }
-
-    public List<PaymentResponse> getAllPayments() {
-        return paymentRepository.findAll().stream().map(this::toDto).toList();
-    }
-
-    private PaymentResponse toDto(Payment payment) {
-        return PaymentResponse.builder()
-                .id(payment.getId())
-                .amount(payment.getAmount())
-                .paymentMethod(payment.getPaymentMethod())
-                .paidAt(payment.getPaidAt())
-                .orderId(payment.getOrder().getId())
-                .build();
+        PaymentIntent intent = PaymentIntent.create(params);
+        return intent.getClientSecret();
     }
 }
