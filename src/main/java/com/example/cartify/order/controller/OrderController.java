@@ -1,6 +1,7 @@
 package com.example.cartify.order.controller;
 
 import com.example.cartify.order.dto.OrderResponse;
+import com.example.cartify.order.dto.PlaceOrderRequest;
 import com.example.cartify.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> placeOrder(Principal principal) {
-        return ResponseEntity.ok(orderService.placeOrder(principal.getName()));
+    public ResponseEntity<OrderResponse> placeOrder(Principal principal, @RequestBody(required = false) PlaceOrderRequest request) {
+        return ResponseEntity.ok(orderService.placeOrder(principal.getName(), request != null ? request.getCouponCode() : null));
     }
 
     @GetMapping
