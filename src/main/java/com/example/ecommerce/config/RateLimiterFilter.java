@@ -1,53 +1,62 @@
 package com.example.ecommerce.config;
 
-import io.github.bucket4j.*;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.Refill;
+import io.github.bucket4j.distributed.AsyncBucketProxy;
+import io.github.bucket4j.distributed.proxy.AsyncProxyManager;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RMapCache;
-import org.redisson.api.RedissonClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
 public class RateLimiterFilter extends OncePerRequestFilter {
 
-    private final RedissonClient redissonClient;
+    private final AsyncProxyManager<String> proxyManager;
 
-    private final static int REQUEST_LIMIT = 5;
-    private final static Duration DURATION = Duration.ofMinutes(1);
-    private final static String RATE_LIMIT_PREFIX = "rate_limit:";
+    private static final int REQUEST_LIMIT = 10;
+    private static final Duration DURATION = Duration.ofMinutes(1);
+
+    private static final BucketConfiguration CONFIG = BucketConfiguration.builder()
+            .addLimit(Bandwidth.classic(REQUEST_LIMIT, Refill.intervally(REQUEST_LIMIT, DURATION)))
+            .build();
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String ip = request.getRemoteAddr();
-        String key = RATE_LIMIT_PREFIX + ip;
+        String ipKey = "rate-limit:" + request.getRemoteAddr();
 
-        RMapCache<String, Bucket> cache = redissonClient.getMapCache("buckets");
-        Bucket bucket = cache.get(key);
+        AsyncBucketProxy bucket = proxyManager.builder().build(ipKey, CONFIG);
 
-        if (bucket == null) {
-            Refill refill = Refill.greedy(REQUEST_LIMIT, DURATION);
-            Bandwidth limit = Bandwidth.classic(REQUEST_LIMIT, refill);
-            bucket = Bucket4j.builder().addLimit(limit).build();
-            cache.put(key, bucket, DURATION.toMillis(), TimeUnit.MILLISECONDS);
-        }
-
-        if (bucket.tryConsume(1)) {
-            filterChain.doFilter(request, response);
-        } else {
-            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.getWriter().write("Too many requests - try again later");
-        }
+        bucket.tryConsume(1).thenAccept(consumed -> {
+            try {
+                if (consumed) {
+                    filterChain.doFilter(request, response);
+                } else {
+                    response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                    response.getWriter().write("Rate limit exceeded. Try again later.");
+                }
+            } catch (IOException | ServletException e) {
+                throw new RuntimeException(e);
+            }
+        }).exceptionally(throwable -> {
+            try {
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.getWriter().write("Rate limiter error: " + throwable.getMessage());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        });
     }
 }
