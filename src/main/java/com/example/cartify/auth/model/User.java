@@ -25,4 +25,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "stripe_customer_id")
+    private String stripeCustomerId;
 }
