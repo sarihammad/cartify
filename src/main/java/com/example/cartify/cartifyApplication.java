@@ -6,10 +6,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 @EnableMethodSecurity
 @SpringBootApplication
-public class cartifyApplication {
+public class CartifyApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(cartifyApplication.class, args);
+		SpringApplication.run(CartifyApplication.class, args);
 	}
 
 }
