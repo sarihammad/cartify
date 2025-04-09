@@ -1,12 +1,11 @@
 package com.example.cartify.payment.model;
 
-import com.example.cartify.auth.model.User;
-import com.example.cartify.order.model.Order;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
+
+import com.example.cartify.order.model.Order;
 
 @Entity
 @Getter
@@ -20,15 +19,16 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal amount;
+    private String stripeSessionId;
+    private String userEmail;
+    private double amount;
+    private String currency;
+    private String status;
 
-    private String paymentMethod;
-
-    private LocalDateTime paidAt;
+    private Instant createdAt;
 
     @ManyToOne
-    private User user;
-
-    @OneToOne
+    @JoinColumn(name = "order_id")
     private Order order;
+    
 }
