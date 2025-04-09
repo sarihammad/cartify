@@ -1,10 +1,11 @@
 package com.example.cartify.payment.service;
 
+import com.example.cartify.order.model.Order;
+import com.example.cartify.order.service.OrderService;
 import com.example.cartify.payment.model.Payment;
 import com.example.cartify.payment.repository.PaymentRepository;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
-import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
@@ -22,6 +23,7 @@ public class StripeWebhookService {
 
     private final PaymentRepository paymentRepository;
     private final EmailService emailService;
+    private final OrderService orderService;    
 
     @Value("${stripe.webhook.secret}")
     private String endpointSecret;
@@ -32,6 +34,8 @@ public class StripeWebhookService {
         if ("checkout.session.completed".equals(event.getType())) {
             EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
             Session session = (Session) dataObjectDeserializer.getObject().orElseThrow();
+            Order order = orderService.findLatestOrderByUserEmail(session.getCustomerEmail());
+
 
             Payment payment = Payment.builder()
                     .stripeSessionId(session.getId())
@@ -40,6 +44,7 @@ public class StripeWebhookService {
                     .currency(session.getCurrency())
                     .status("COMPLETED")
                     .createdAt(Instant.now())
+                    .order(order)
                     .build();
 
             paymentRepository.save(payment);
