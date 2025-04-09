@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,5 +80,13 @@ public class OrderService {
                 .createdAt(order.getCreatedAt())
                 .items(items)
                 .build();
+    }
+
+    public Order findLatestOrderByUserEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    
+        return orderRepository.findTopByUserOrderByCreatedAtDesc(user)
+                .orElseThrow(() -> new RuntimeException("No order found for user"));
     }
 }
