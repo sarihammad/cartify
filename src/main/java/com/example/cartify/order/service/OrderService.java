@@ -9,6 +9,9 @@ import com.example.cartify.order.dto.OrderResponse;
 import com.example.cartify.order.model.Order;
 import com.example.cartify.order.model.OrderItem;
 import com.example.cartify.order.repository.OrderRepository;
+import com.example.cartify.product.model.Product;
+import com.example.cartify.product.repository.ProductRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final CartItemRepository cartItemRepository;
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
     public OrderResponse placeOrder(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
@@ -42,17 +46,33 @@ public class OrderService {
                 .total(total)
                 .build();
 
-        List<OrderItem> orderItems = cartItems.stream().map(item -> OrderItem.builder()
-                .order(order)
-                .product(item.getProduct())
-                .quantity(item.getQuantity())
-                .priceSnapshot(item.getProduct().getPrice())
-                .build()).toList();
+        List<OrderItem> orderItems = cartItems.stream().map(item -> {
+            Product product = item.getProduct();
+
+            // Check and reduce stock
+            if (product.getQuantity() < item.getQuantity()) {
+                throw new RuntimeException("Not enough stock for product: " + product.getName());
+            }
+            product.setQuantity(product.getQuantity() - item.getQuantity());
+
+            return OrderItem.builder()
+                    .order(order)
+                    .product(product)
+                    .quantity(item.getQuantity())
+                    .priceSnapshot(product.getPrice())
+                    .build();
+        }).toList();
 
         order.setItems(orderItems);
         orderRepository.save(order);
 
-        cartItemRepository.deleteAll(cartItems); // Clear cart after placing order
+        // Save updated stock
+        orderItems.forEach(orderItem -> {
+            productRepository.save(orderItem.getProduct());
+        });
+
+        // Clear cart after placing order
+        cartItemRepository.deleteAll(cartItems);
 
         return toDto(order);
     }

@@ -28,4 +28,7 @@ public class Product {
 
     private String imageUrl;
 
+    @Column(nullable = false)
+    private Integer quantity;
+    
 }
