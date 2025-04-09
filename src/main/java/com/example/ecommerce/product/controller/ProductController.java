@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 public class ProductController {
-    private ProductService productService;
+    private final ProductService productService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
