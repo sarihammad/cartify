@@ -118,6 +118,11 @@
 			<artifactId>redisson</artifactId>
 			<version>3.25.2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>24.8.0</version>
+		</dependency>
 <dependency>
     <groupId>com.bucket4j</groupId>
     <artifactId>bucket4j_jdk17-redisson</artifactId>
