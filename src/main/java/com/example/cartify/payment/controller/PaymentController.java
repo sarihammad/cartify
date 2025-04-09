@@ -32,7 +32,7 @@ public class PaymentController {
     public ResponseEntity<?> createRefund(
             Principal principal,
             @RequestParam String paymentIntentId,
-            @RequestParam Long amountInCents // Refund amount in cents
+            @RequestParam Long amountInCents
     ) {
         try {
             var refund = refundService.createRefund(principal.getName(), paymentIntentId, amountInCents);
