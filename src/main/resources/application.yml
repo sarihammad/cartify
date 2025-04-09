@@ -10,7 +10,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   redis:
-    host: localhost
+    host: ecommerce_redis
     port: 6379
 
   kafka:
@@ -22,3 +22,8 @@ server:
 jwt:
   secret: 5b7e06892ace6899d76949f2b9045c32d48d7a041c2be979d3057b6b0836e779
   expirationMs: 3600000
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
