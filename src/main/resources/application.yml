@@ -23,6 +23,10 @@ jwt:
   secret: 5b7e06892ace6899d76949f2b9045c32d48d7a041c2be979d3057b6b0836e779
   expirationMs: 3600000
 
+stripe:
+  secret:
+    key: ${STRIPE_SECRET_KEY}
+
 
 logging:
   level:
