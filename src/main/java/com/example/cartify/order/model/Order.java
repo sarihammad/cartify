@@ -1,6 +1,8 @@
 package com.example.cartify.order.model;
 
 import com.example.cartify.auth.model.User;
+import com.example.cartify.coupon.model.Coupon;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,4 +32,6 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) // cascade to 
     private List<OrderItem> items;
+
+    private Coupon coupon;
 }

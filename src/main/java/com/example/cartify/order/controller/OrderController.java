@@ -18,8 +18,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> placeOrder(Principal principal) {
-        return ResponseEntity.ok(orderService.placeOrder(principal.getName()));
+    public ResponseEntity<OrderResponse> placeOrder(Principal principal, String couponCode) {
+        return ResponseEntity.ok(orderService.placeOrder(principal.getName(), couponCode));
     }
 
     @GetMapping

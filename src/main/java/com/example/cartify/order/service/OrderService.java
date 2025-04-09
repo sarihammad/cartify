@@ -4,6 +4,8 @@ import com.example.cartify.auth.model.User;
 import com.example.cartify.auth.repository.UserRepository;
 import com.example.cartify.cart.model.CartItem;
 import com.example.cartify.cart.repository.CartItemRepository;
+import com.example.cartify.coupon.model.Coupon;
+import com.example.cartify.coupon.service.CouponService;
 import com.example.cartify.order.dto.OrderItemResponse;
 import com.example.cartify.order.dto.OrderResponse;
 import com.example.cartify.order.model.Order;
@@ -27,8 +29,9 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final CouponService couponService;
 
-    public OrderResponse placeOrder(String email) {
+    public OrderResponse placeOrder(String email, String couponCode) {
         User user = userRepository.findByEmail(email).orElseThrow();
         List<CartItem> cartItems = cartItemRepository.findByUser(user);
 
@@ -40,10 +43,17 @@ public class OrderService {
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        Coupon coupon = null;
+        if (couponCode != null && !couponCode.isBlank()) {
+            coupon = couponService.validateCoupon(couponCode);
+            total = couponService.applyDiscount(total, coupon);
+        }
+
         Order order = Order.builder()
                 .user(user)
                 .createdAt(LocalDateTime.now())
                 .total(total)
+                .coupon(coupon)
                 .build();
 
         List<OrderItem> orderItems = cartItems.stream().map(item -> {
