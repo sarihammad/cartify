@@ -115,9 +115,23 @@
 		</dependency>
 		<dependency>
 			<groupId>org.redisson</groupId>
-			<artifactId>redisson-spring-boot-starter</artifactId>
+			<artifactId>redisson</artifactId>
 			<version>3.25.2</version>
 		</dependency>
+<dependency>
+    <groupId>com.bucket4j</groupId>
+    <artifactId>bucket4j_jdk17-redisson</artifactId>
+    <version>8.14.0</version> <!-- Use the latest version available -->
+</dependency>
+
+
+
+		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson</artifactId>
+			<version>3.25.2</version> <!-- Ensure compatibility with your Redis setup -->
+		</dependency>
+		
 	</dependencies>
 
 	<build>
