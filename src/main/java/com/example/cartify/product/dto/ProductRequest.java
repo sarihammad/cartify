@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,4 +15,5 @@ public class ProductRequest {
     private String description;
     private BigDecimal price;
     private String imageUrl;
+    private Integer quantity;
 }
