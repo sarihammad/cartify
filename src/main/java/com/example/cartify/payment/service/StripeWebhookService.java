@@ -1,5 +1,7 @@
 package com.example.cartify.payment.service;
 
+import com.example.cartify.auth.repository.UserRepository;
+import com.example.cartify.common.service.EmailService;
 import com.example.cartify.order.model.Order;
 import com.example.cartify.order.service.OrderService;
 import com.example.cartify.payment.model.Payment;
@@ -22,6 +24,7 @@ import java.time.Instant;
 public class StripeWebhookService {
 
     private final PaymentRepository paymentRepository;
+    private final UserRepository userRepository;
     private final EmailService emailService;
     private final OrderService orderService;    
 
@@ -35,6 +38,17 @@ public class StripeWebhookService {
             EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
             Session session = (Session) dataObjectDeserializer.getObject().orElseThrow();
             Order order = orderService.findLatestOrderByUserEmail(session.getCustomerEmail());
+
+            String email = session.getCustomerEmail();
+            String stripeCustomerId = session.getCustomer();
+        
+            userRepository.findByEmail(email).ifPresent(user -> {
+                if (user.getStripeCustomerId() == null) {
+                    user.setStripeCustomerId(stripeCustomerId);
+                    userRepository.save(user);
+                    log.info("Updated user {} with Stripe customer ID {}", email, stripeCustomerId);
+                }
+            });
 
 
             Payment payment = Payment.builder()
