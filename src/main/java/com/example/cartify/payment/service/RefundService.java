@@ -43,4 +43,24 @@ public class RefundService {
 
         return refundRepository.save(refund);
     }
+
+    public Refund createRefund(String paymentIntentId) throws StripeException {
+        // Admin-triggered full refund, no user or amount provided
+        RefundCreateParams params = RefundCreateParams.builder()
+                .setPaymentIntent(paymentIntentId)
+                .build();
+    
+        com.stripe.model.Refund stripeRefund = com.stripe.model.Refund.create(params);
+    
+        Refund refund = Refund.builder()
+                .stripeRefundId(stripeRefund.getId())
+                .paymentIntentId(paymentIntentId)
+                .amount(stripeRefund.getAmount())
+                .currency(stripeRefund.getCurrency())
+                .status(stripeRefund.getStatus())
+                .createdAt(Instant.now())
+                .build();
+    
+        return refundRepository.save(refund);
+    }
 }
