@@ -1,29 +1,46 @@
 package com.example.cartify.payment.service;
 
+import com.example.cartify.auth.model.User;
+import com.example.cartify.auth.repository.UserRepository;
+import com.example.cartify.payment.model.Refund;
+import com.example.cartify.payment.repository.RefundRepository;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Refund;
+// import com.stripe.model.Refund as StripeRefund;
 import com.stripe.param.RefundCreateParams;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class RefundService {
 
-    public Refund createRefund(String paymentIntentId) {
-        try {
-            RefundCreateParams params = RefundCreateParams.builder()
-                    .setPaymentIntent(paymentIntentId)
-                    .build();
+    private final RefundRepository refundRepository;
+    private final UserRepository userRepository;
 
-            Refund refund = Refund.create(params);
-            log.info("Refund created: {}", refund.getId());
-            return refund;
+    public Refund createRefund(String email, String paymentIntentId, Long amountInCents) throws StripeException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        } catch (StripeException e) {
-            log.error("Failed to create refund", e);
-            throw new RuntimeException("Refund failed: " + e.getMessage());
-        }
+        RefundCreateParams params = RefundCreateParams.builder()
+                .setPaymentIntent(paymentIntentId)
+                .setAmount(amountInCents)
+                .build();
+
+        com.stripe.model.Refund stripeRefund = com.stripe.model.Refund.create(params);
+
+        Refund refund = Refund.builder()
+                .stripeRefundId(stripeRefund.getId())
+                .paymentIntentId(paymentIntentId)
+                .amount(stripeRefund.getAmount())
+                .currency(stripeRefund.getCurrency())
+                .status(stripeRefund.getStatus())
+                .user(user)
+                .createdAt(Instant.now())
+                .build();
+
+        return refundRepository.save(refund);
     }
 }
