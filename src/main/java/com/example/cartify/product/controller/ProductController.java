@@ -20,7 +20,9 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
-        return ResponseEntity.ok(productService.createProduct(request));
+        ProductResponse response = productService.createProduct(request);
+        System.out.println("Mocked ProductResponse = " + response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
