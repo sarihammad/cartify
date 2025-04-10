@@ -36,10 +36,11 @@ jwt:
   expirationMs: 3600000
 
 stripe:
+  secret-key: test-key
   secret:
-    key: ${STRIPE_SECRET_KEY}
+    key: test-key
   webhook:
-    secret: ${STRIPE_WEBHOOK_SECRET}
+    secret: test-webhook-key
 
 
 logging:

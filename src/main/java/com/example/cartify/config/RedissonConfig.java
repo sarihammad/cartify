@@ -6,13 +6,15 @@ import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Profile("!test")
 public class RedissonConfig {
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
-        System.out.println("✅ Using manual RedissonClient config");
+        System.out.println("Using manual RedissonClient config");
         Config config = new Config();
         config.setCodec(new JsonJacksonCodec());
         config.useSingleServer()
