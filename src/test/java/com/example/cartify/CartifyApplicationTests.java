@@ -9,7 +9,11 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@SpringBootTest(classes = {CartifyApplication.class, TestRateLimiterConfig.class})
+@SpringBootTest(classes = {
+    CartifyApplication.class,
+    TestRateLimiterConfig.class,
+    TestRedisConfig.class
+})
 @ActiveProfiles("test")
 public class CartifyApplicationTests {
 
