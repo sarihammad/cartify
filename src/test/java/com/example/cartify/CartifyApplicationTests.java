@@ -8,16 +8,13 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest(
-    classes = {
-        CartifyApplication.class,
-        TestRateLimiterConfig.class,
-        TestRedisConfig.class
-    },
-    exclude = com.example.cartify.config.RedissonConfig.class
-)
-@Testcontainers
+@SpringBootTest(classes = {
+    CartifyApplication.class,
+    TestRateLimiterConfig.class,
+    TestRedisConfig.class
+})
 @ActiveProfiles("test")
+@Testcontainers
 public class CartifyApplicationTests {
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
