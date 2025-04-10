@@ -12,7 +12,7 @@ public class RedissonConfig {
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
-        System.out.println("✅ Using manual RedissonClient config");
+        System.out.println("Using manual RedissonClient config");
         Config config = new Config();
         config.setCodec(new JsonJacksonCodec());
         config.useSingleServer()
