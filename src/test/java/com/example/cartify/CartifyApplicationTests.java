@@ -12,7 +12,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @ActiveProfiles("test")
 public class CartifyApplicationTests {
-
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
         .withDatabaseName("cartify_test")
         .withUsername("test")
