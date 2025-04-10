@@ -6,15 +6,15 @@
 
 ## Features
 
-JWT Authentication (Signup, Login, Role-based access)  
-Product Management (CRUD + pagination, filtering)  
-Shopping Cart per User  
-Order Placement & Payment via Stripe  
-Stripe Webhook Listener with Signature Verification  
-Redis Rate Limiting with Bucket4j  
-PostgreSQL for persistent storage  
-Integration & Unit Tests using Testcontainers  
-Dockerized for easy deployment  
+- JWT Authentication (Signup, Login, Role-based access)  
+- Product Management (CRUD + pagination, filtering)  
+- Shopping Cart per User  
+- Order Placement & Payment via Stripe  
+- Stripe Webhook Listener with Signature Verification  
+- Redis Rate Limiting with Bucket4j  
+- PostgreSQL for persistent storage  
+- Integration & Unit Tests using Testcontainers  
+- Dockerized for easy deployment  
 
 ---
 
