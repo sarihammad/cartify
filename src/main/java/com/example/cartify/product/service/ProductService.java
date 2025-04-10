@@ -23,6 +23,7 @@ public class ProductService {
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .imageUrl(request.getImageUrl())
+                .quantity(request.getQuantity())
                 .build();
         
         product = productRepository.save(product);
@@ -66,6 +67,7 @@ public class ProductService {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .imageUrl(product.getImageUrl())
+                .quantity(product.getQuantity())
                 .build();
 
     }
