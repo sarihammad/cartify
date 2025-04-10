@@ -27,6 +27,9 @@ public class CartifyApplicationTests {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+
+		registry.add("spring.redis.host", () -> "localhost");
+		registry.add("spring.redis.port", () -> "6379");
     }
 
     @Test
