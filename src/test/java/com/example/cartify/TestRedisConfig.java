@@ -7,9 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("test") // ✅ Only loaded in test
+@Profile("test")
 public class TestRedisConfig {
-
     @Bean
     public RedissonClient redissonClient() {
         return Mockito.mock(RedissonClient.class);
