@@ -1,5 +1,6 @@
 package com.example.cartify.product.controller;
 
+import com.example.cartify.TestRateLimiterConfig;
 import com.example.cartify.config.JwtAuthenticationFilter;
 import com.example.cartify.config.StripeConfig;
 import com.example.cartify.payment.service.PaymentService;
@@ -21,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+
 import static org.mockito.Mockito.*;
 import io.github.bucket4j.distributed.proxy.RemoteAsyncBucketBuilder;
 import org.springframework.http.MediaType;
@@ -47,6 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(TestRateLimiterConfig.class)
 public class ProductControllerTest {
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
