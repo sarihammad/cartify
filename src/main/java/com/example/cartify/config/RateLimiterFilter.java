@@ -10,6 +10,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,6 +21,7 @@ import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class RateLimiterFilter extends OncePerRequestFilter {
 
     private final AsyncProxyManager<String> proxyManager;
