@@ -33,30 +33,23 @@ public class RateLimiterFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+    
         String ipKey = "rate-limit:" + request.getRemoteAddr();
-
         AsyncBucketProxy bucket = proxyManager.builder().build(ipKey, CONFIG);
-
-        bucket.tryConsume(1).thenAccept(consumed -> {
-            try {
-                if (consumed) {
-                    filterChain.doFilter(request, response);
-                } else {
-                    response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-                    response.getWriter().write("Rate limit exceeded. Try again later.");
-                }
-            } catch (IOException | ServletException e) {
-                throw new RuntimeException(e);
+    
+        try {
+            boolean consumed = bucket.tryConsume(1).get(); // block for result
+    
+            if (consumed) {
+                filterChain.doFilter(request, response);
+            } else {
+                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                response.getWriter().write("Rate limit exceeded. Try again later.");
             }
-        }).exceptionally(throwable -> {
-            try {
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.getWriter().write("Rate limiter error: " + throwable.getMessage());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return null;
-        });
+    
+        } catch (Exception e) {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.getWriter().write("Rate limiter error: " + e.getMessage());
+        }
     }
 }
