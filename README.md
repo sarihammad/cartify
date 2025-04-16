@@ -1,6 +1,6 @@
 # Cartify
 
-An e-commerce backend built with Spring Boot.
+An e-commerce application built with Spring Boot.
 
 ## Live Deployment
 
