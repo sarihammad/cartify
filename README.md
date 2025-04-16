@@ -1,6 +1,6 @@
 # Cartify
 
-**Cartify** is a production-ready e-commerce backend built with **Spring Boot**, supporting secure authentication, role-based access, product management, shopping cart functionality, Stripe payments, and Redis-based rate limiting. Designed for scalability, resilience, and real-world system design readiness.
+An e-commerce backend built with Spring Boot.
 
 ## Live Deployment
 
