@@ -1,8 +1,6 @@
 # Cartify
 
-E-commerce application built with Spring Boot.
-
-Supports JWT Authentication, Product, Shopping Cart & Coupons Management, Payments, Refunds, Stripe Webhooks, Rate Limiting and storage.
+E-commerce application.
 
 ## Deployment
 
