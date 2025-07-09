@@ -97,22 +97,6 @@ A production-ready e-commerce backend built with Spring Boot, designed for scala
                        └─────────────────┘
 ```
 
-## Tech Stack
-
-| Component                   | Technology               | Version |
-| --------------------------- | ------------------------ | ------- |
-| **Language**                | Java                     | 17      |
-| **Framework**               | Spring Boot              | 3.4.4   |
-| **Database**                | PostgreSQL               | 15      |
-| **Caching & Rate Limiting** | Redis + Bucket4j         | 8.14.0  |
-| **Message Broker**          | Apache Kafka             | Latest  |
-| **Payment Processing**      | Stripe                   | 24.8.0  |
-| **Authentication**          | JWT + Spring Security    | -       |
-| **API Documentation**       | OpenAPI 3 (Swagger)      | 2.3.0   |
-| **Testing**                 | JUnit 5 + Testcontainers | 1.19.3  |
-| **Build Tool**              | Maven                    | -       |
-| **Containerization**        | Docker + Docker Compose  | -       |
-
 ## API Documentation
 
 ### Authentication Endpoints
@@ -151,3 +135,8 @@ A production-ready e-commerce backend built with Spring Boot, designed for scala
 
 - `POST /api/v1/admin/refunds` - Admin refund processing
 - `GET /api/v1/admin/orders` - Admin order management
+
+
+## Live Deploymnent
+
+http://ec2-18-222-124-255.us-east-2.compute.amazonaws.com/api/v1
