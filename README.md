@@ -1,6 +1,6 @@
 # Cartify
 
-A production-ready e-commerce backend built with Spring Boot, designed for scalability and security. Provides a complete e-commerce solution with modern architecture patterns and complete features.
+A production-ready e-commerce backend built with Spring Boot, designed for scalability. This complete e-commerce solution incorporates modern architecture patterns and comprehensive features, ensuring high availability and seamless auto-scaling through AWS deployment.
 
 ## Features
 
